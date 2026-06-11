@@ -1,0 +1,46 @@
+import requests
+import uuid
+
+ENDPOINT = "https://compassuol.serverest.dev"
+
+
+def gerar_email():
+    return f"teste_{uuid.uuid4()}@email.com"
+
+
+def criar_usuario():
+    payload = {
+        "nome": "Usuario Teste",
+        "email": gerar_email(),
+        "password": "123456",
+        "administrador": "true"
+    }
+    response = requests.post(f"{ENDPOINT}/usuarios", json=payload)
+    return response.json()["_id"]
+
+
+def criar_produto():
+    payload = {
+        "nome": f"Produto {uuid.uuid4()}",
+        "preco": 100,
+        "descricao": "Produto teste",
+        "quantidade": 10
+    }
+    response = requests.post(f"{ENDPOINT}/produtos", json=payload)
+    return response.json()["_id"]
+
+
+def criar_carrinho(usuario_id, produto_id):
+    payload = {
+        "produtos": [
+            {
+                "idProduto": produto_id,
+                "quantidade": 1
+            }
+        ]
+    }
+    response = requests.post(
+        f"{ENDPOINT}/carrinhos",
+        json=payload
+    )
+    return response.json()["_id"]
