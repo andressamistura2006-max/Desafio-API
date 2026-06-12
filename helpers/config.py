@@ -1,0 +1,1 @@
+ENDPOINT = "https://compassuol.serverest.dev"
