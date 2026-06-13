@@ -26,7 +26,7 @@ Suite de testes automatizados de API REST usando Python, Pytest e Requests, com 
 ## Instalacao
 
 ```bash
-git clone https://github.com/andressamistura2006-max/Desafio-API.git
+git clone https://github.com/andressamistura/Desafio-API.git
 cd Desafio-API
 pip install -r requirements.txt
 ```
@@ -70,7 +70,7 @@ Desafio-API/
 |   |-- test_produtos.py      # produtos com e sem token
 |   |-- test_carrinhos.py     # carrinhos — criar, buscar, concluir, cancelar
 |   `-- test_schemas.py       # validacao de contrato JSON Schema
-|-- conftest.py               # fixture token_admin
+|-- conftest.py               # fixtures de sessao: token_admin, usuario_login, produto_admin
 |-- pytest.ini                # coleta oficial apenas em tests/
 |-- PLANO-DE-TESTES.md        # planejamento da suite
 |-- test_desafio_api.py       # arquivo legado
@@ -148,7 +148,7 @@ Todos os cenarios mapeados foram cobertos nesta versao da suite.
 - Exclusao com token
 - ID inexistente (400)
 
-### Carrinhos (6 testes)
+### Carrinhos (7 testes)
 
 - Listagem
 - Busca por ID
@@ -190,6 +190,16 @@ Durante a analise da API, foram observados comportamentos que podem ser consider
 
 **Severidade:** Media. Nao causa perda de dados, mas pode induzir falsa percepcao de sucesso.
 
+### Melhoria 3 - Latencia de propagacao entre POST /usuarios e POST /login sob carga
+
+**Endpoint:** `POST /login` logo apos `POST /usuarios`
+
+**Comportamento observado:** A API apresenta delay de propagacao entre o cadastro de um usuario e sua disponibilidade para autenticacao. Em condicoes normais o delay e de 1 a 2 segundos. Sob multiplas requisicoes simultaneas esse delay aumenta significativamente, podendo ultrapassar 15 segundos — fazendo o login retornar 401 mesmo com credenciais corretas.
+
+**Impacto:** Testes automatizados falham de forma intermitente, exigindo delays artificiais e logica de retry na suite.
+
+**Severidade:** Baixa. Nao causa perda de dados em uso normal. O impacto e maior em ambientes de teste e integracoes com alto volume de requisicoes simultaneas.
+
 ---
 
 ## CI/CD
@@ -211,3 +221,5 @@ Andressa Mistura
 Obrigada aos **colegas do Squad 3** pelo apoio, troca de conhecimento e parceria durante todo o bootcamp.
 
 Um agradecimento especial ao **Grupo de Meninas do Bootcamp** — a força de vocês tornou essa jornada muito mais leve e divertida.
+
+Agradeço também ao colega **Kanan** por me ajudar cada vez que um teste falhava.
