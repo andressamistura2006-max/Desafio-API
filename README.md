@@ -203,3 +203,11 @@ Consulte `.github/workflows/tests.yml` para ver a configuracao do pipeline.
 ## Autor
 
 Andressa Mistura
+
+---
+
+## Agradecimentos
+
+Obrigada aos **colegas do Squad 3** pelo apoio, troca de conhecimento e parceria durante todo o bootcamp.
+
+Um agradecimento especial ao **Grupo de Meninas do Bootcamp** — a força de vocês tornou essa jornada muito mais leve e divertida.
