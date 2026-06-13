@@ -1,5 +1,7 @@
 # Desafio API - Testes Automatizados (ServeRest)
 
+![Testes](https://github.com/andressamistura2006-max/Desafio-API/actions/workflows/tests.yml/badge.svg)
+
 Suite de testes automatizados de API REST usando Python, Pytest e Requests, com base na API publica ServeRest. A suite cobre fluxos de autenticacao, usuarios, produtos e carrinhos, com cenarios positivos e negativos.
 
 ---
@@ -66,7 +68,8 @@ Desafio-API/
 |   |-- test_usuarios.py      # CRUD de usuarios + cenarios negativos
 |   |-- test_login.py         # cenarios de autenticacao
 |   |-- test_produtos.py      # produtos com e sem token
-|   `-- test_carrinhos.py     # leitura de carrinhos
+|   |-- test_carrinhos.py     # carrinhos — criar, buscar, concluir, cancelar
+|   `-- test_schemas.py       # validacao de contrato JSON Schema
 |-- conftest.py               # fixture token_admin
 |-- pytest.ini                # coleta oficial apenas em tests/
 |-- PLANO-DE-TESTES.md        # planejamento da suite
@@ -98,23 +101,19 @@ A cobertura foi calculada com base em cenarios por endpoint: para cada operacao 
 | `DELETE /produtos/{id}` | Excluir produto | 1 | 1 | 100% |
 | `GET /carrinhos` | Listar carrinhos | 1 | 1 | 100% |
 | `GET /carrinhos/{id}` | Buscar por ID | 1 | 1 | 100% |
-| `POST /carrinhos` | Criar carrinho | 2 | 0 | 0% |
-| `DELETE /carrinhos/concluir-compra` | Concluir compra | 1 | 0 | 0% |
-| `DELETE /carrinhos/cancelar-compra` | Cancelar compra | 1 | 0 | 0% |
+| `POST /carrinhos` | Criar carrinho | 2 | 2 | 100% |
+| `DELETE /carrinhos/concluir-compra` | Concluir compra | 1 | 1 | 100% |
+| `DELETE /carrinhos/cancelar-compra` | Cancelar compra | 1 | 1 | 100% |
 
-**Total: 22 cenarios cobertos de 26 mapeados**
+**Total: 26 cenarios cobertos de 26 mapeados**
 
 ### Cobertura total
 
-> 22 / 26 cenarios mapeados = **85%**
+> 26 / 26 cenarios mapeados = **100%**
 
 ### O que ficou fora e por que
 
-| Endpoint | Motivo |
-|---|---|
-| `POST /carrinhos` | Exige composicao de usuario autenticado, produto existente e payload encadeado. Priorizado para proxima iteracao. |
-| `DELETE /carrinhos/concluir-compra` | Depende de um carrinho ativo criado previamente. |
-| `DELETE /carrinhos/cancelar-compra` | Depende de um carrinho ativo criado previamente. |
+Todos os cenarios mapeados foram cobertos nesta versao da suite.
 
 ---
 
@@ -149,10 +148,15 @@ A cobertura foi calculada com base em cenarios por endpoint: para cada operacao 
 - Exclusao com token
 - ID inexistente (400)
 
-### Carrinhos (2 testes)
+### Carrinhos (6 testes)
 
 - Listagem
 - Busca por ID
+- Criar carrinho com token (201)
+- Criar carrinho sem token (401)
+- Tentar criar dois carrinhos para o mesmo usuário (400)
+- Concluir compra
+- Cancelar compra
 
 ### Contrato / JSON Schema (3 testes)
 
