@@ -16,27 +16,27 @@ def test_listar_produtos():
 
 # BUSCAR PRODUTO POR ID
 
-def test_buscar_produto_por_id():
-    response = requests.get(f"{ENDPOINT}/produtos")
-    produto_id = response.json()["produtos"][0]["_id"]
-
-    busca = requests.get(f"{ENDPOINT}/produtos/{produto_id}")
+def test_buscar_produto_por_id(produto_admin):
+    busca = requests.get(f"{ENDPOINT}/produtos/{produto_admin}")
 
     assert busca.status_code == 200
-    assert busca.json()["_id"] == produto_id
+    assert busca.json()["_id"] == produto_admin
 
 
 # CADASTRAR PRODUTO (com token de admin)
 
 def test_cadastrar_produto_com_token(token_admin):
     payload = {
-        "nome": f"Produto {uuid.uuid4()}",
+        "nome": f"Produto {uuid.uuid4().hex[:8]}",
         "preco": 150,
         "descricao": "Produto criado em teste automatizado",
         "quantidade": 5
     }
-    headers = {"Authorization": token_admin}
-    response = requests.post(f"{ENDPOINT}/produtos", json=payload, headers=headers)
+    response = requests.post(
+        f"{ENDPOINT}/produtos",
+        json=payload,
+        headers={"Authorization": token_admin}
+    )
 
     assert response.status_code == 201
     assert response.json()["message"] == "Cadastro realizado com sucesso"
@@ -46,7 +46,7 @@ def test_cadastrar_produto_com_token(token_admin):
 
 def test_cadastrar_produto_sem_token():
     payload = {
-        "nome": f"Produto {uuid.uuid4()}",
+        "nome": f"Produto {uuid.uuid4().hex[:8]}",
         "preco": 150,
         "descricao": "Produto sem auth",
         "quantidade": 5
@@ -56,28 +56,33 @@ def test_cadastrar_produto_sem_token():
     assert response.status_code == 401
 
 
-# EDITAR PRODUTO (com token de admin)
+# EDITAR PRODUTO (cria produto dedicado para não afetar outros testes)
 
 def test_editar_produto_com_token(token_admin):
     produto_id = criar_produto(token_admin)
     payload = {
-        "nome": f"Produto Atualizado {uuid.uuid4()}",
+        "nome": f"Produto Atualizado {uuid.uuid4().hex[:8]}",
         "preco": 200,
         "descricao": "Produto atualizado em teste",
         "quantidade": 20
     }
-    headers = {"Authorization": token_admin}
-    response = requests.put(f"{ENDPOINT}/produtos/{produto_id}", json=payload, headers=headers)
+    response = requests.put(
+        f"{ENDPOINT}/produtos/{produto_id}",
+        json=payload,
+        headers={"Authorization": token_admin}
+    )
 
     assert response.status_code == 200
 
 
-# EXCLUIR PRODUTO (com token de admin)
+# EXCLUIR PRODUTO (cria produto dedicado para não afetar outros testes)
 
 def test_excluir_produto_com_token(token_admin):
     produto_id = criar_produto(token_admin)
-    headers = {"Authorization": token_admin}
-    response = requests.delete(f"{ENDPOINT}/produtos/{produto_id}", headers=headers)
+    response = requests.delete(
+        f"{ENDPOINT}/produtos/{produto_id}",
+        headers={"Authorization": token_admin}
+    )
 
     assert response.status_code == 200
 

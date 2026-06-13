@@ -8,8 +8,8 @@ from helpers.usuarios import gerar_email
 SENHA_PADRAO = "teste123"
 
 # Retry para lidar com latência de propagação da API remota
-_MAX_RETRIES = 3
-_RETRY_DELAY = 2  # segundos entre tentativas
+_MAX_RETRIES = 5
+_RETRY_DELAY = 3  # segundos entre tentativas
 
 
 def fazer_login(email: str, password: str) -> requests.Response:

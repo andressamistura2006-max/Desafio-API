@@ -1,10 +1,8 @@
 import requests
-import uuid
 from jsonschema import validate
 
 from helpers.config import ENDPOINT
 from helpers.usuarios import gerar_email
-from helpers.auth import SENHA_PADRAO
 
 
 # ==========================================
@@ -42,7 +40,7 @@ def test_schema_cadastrar_usuario():
     validate(instance=response.json(), schema=SCHEMA_CADASTRO_USUARIO)
 
 
-# SCHEMA 2 — POST /login (login com sucesso)
+# SCHEMA 2 — POST /login (reutiliza usuario_login da sessão)
 
 SCHEMA_LOGIN = {
     "type": "object",
@@ -54,24 +52,18 @@ SCHEMA_LOGIN = {
     "additionalProperties": False
 }
 
-def test_schema_login():
-    email = gerar_email()
-    requests.post(f"{ENDPOINT}/usuarios", json={
-        "nome": "Schema Login",
-        "email": email,
-        "password": SENHA_PADRAO,
-        "administrador": "true"
-    })
+def test_schema_login(usuario_login):
+    email, password = usuario_login
     response = requests.post(
         f"{ENDPOINT}/login",
-        json={"email": email, "password": SENHA_PADRAO}
+        json={"email": email, "password": password}
     )
 
     assert response.status_code == 200
     validate(instance=response.json(), schema=SCHEMA_LOGIN)
 
 
-# SCHEMA 3 — GET /produtos (listagem de produtos)
+# SCHEMA 3 — GET /produtos (reutiliza produto_admin da sessão)
 
 SCHEMA_PRODUTO_ITEM = {
     "type": "object",

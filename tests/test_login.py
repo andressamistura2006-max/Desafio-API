@@ -1,4 +1,3 @@
-import time
 import requests
 
 from helpers.config import ENDPOINT
@@ -6,24 +5,12 @@ from helpers.usuarios import gerar_email
 from helpers.auth import SENHA_PADRAO
 
 
-def criar_usuario_com_credenciais(email: str, password: str) -> None:
-    """Cria um usuário com email e senha específicos para testes de login."""
-    requests.post(f"{ENDPOINT}/usuarios", json={
-        "nome": "Usuario Login Teste",
-        "email": email,
-        "password": password,
-        "administrador": "true"
-    })
-
-
 # LOGIN COM CREDENCIAIS CORRETAS
+# Reutiliza o usuário criado pela fixture — sem criar novo usuário aqui
 
-def test_login_credenciais_corretas():
-    email = gerar_email()
-    criar_usuario_com_credenciais(email, SENHA_PADRAO)
-    time.sleep(2)  # aguarda propagação na API remota
-
-    response = requests.post(f"{ENDPOINT}/login", json={"email": email, "password": SENHA_PADRAO})
+def test_login_credenciais_corretas(usuario_login):
+    email, password = usuario_login
+    response = requests.post(f"{ENDPOINT}/login", json={"email": email, "password": password})
 
     assert response.status_code == 200
     assert "authorization" in response.json()
@@ -32,10 +19,8 @@ def test_login_credenciais_corretas():
 
 # LOGIN COM SENHA ERRADA
 
-def test_login_senha_errada():
-    email = gerar_email()
-    criar_usuario_com_credenciais(email, SENHA_PADRAO)
-
+def test_login_senha_errada(usuario_login):
+    email, _ = usuario_login
     response = requests.post(f"{ENDPOINT}/login", json={"email": email, "password": "senhaerrada"})
 
     assert response.status_code == 401
