@@ -1,6 +1,6 @@
 # Desafio API - Testes Automatizados (ServeRest)
 
-Suíte de testes automatizados de API REST usando Python, Pytest e Requests, com base na API pública ServeRest. Cobre fluxos de autenticação, usuários, produtos e carrinhos — com cenários positivos, negativos e validação de contrato via JSON Schema.
+Suite de testes automatizados de API REST usando Python, Pytest e Requests, com base na API publica ServeRest. A suite cobre fluxos de autenticacao, usuarios, produtos e carrinhos, com cenarios positivos e negativos.
 
 ---
 
@@ -21,7 +21,7 @@ Suíte de testes automatizados de API REST usando Python, Pytest e Requests, com
 
 ---
 
-## Instalação
+## Instalacao
 
 ```bash
 git clone https://github.com/andressamistura2006-max/Desafio-API.git
@@ -31,64 +31,66 @@ pip install -r requirements.txt
 
 ---
 
-## Execução dos testes
+## Execucao dos testes
 
 ```bash
-# Todos os testes
-pytest tests/ -v
+# Todos os testes oficiais
+pytest
 
-# Com logs detalhados
-pytest tests/ -v -s
+# Com saida detalhada
+pytest -v
 
-# Um módulo específico
+# Com logs/prints
+pytest -v -s
+
+# Um modulo especifico
 pytest tests/test_login.py -v
 ```
+
+O arquivo `test_desafio_api.py` foi mantido como legado da primeira versao da suite. A coleta padrao do Pytest esta configurada em `pytest.ini` para executar apenas os testes dentro de `tests/`.
 
 ---
 
 ## Estrutura do projeto
 
-```
+```text
 Desafio-API/
-├── helpers/
-│   ├── config.py        # URL base da API
-│   ├── auth.py          # login, obtenção de token, SENHA_PADRAO
-│   ├── usuarios.py      # gerar_email(), criar_usuario()
-│   └── produtos.py      # criar_produto(token)
-│
-├── tests/
-│   ├── test_usuarios.py   # CRUD de usuários + cenários negativos
-│   ├── test_login.py      # todos os cenários de autenticação
-│   ├── test_produtos.py   # CRUD de produtos com e sem token
-│   └── test_carrinhos.py  # leitura de carrinhos
-│
-├── conftest.py            # fixture token_admin (session-scoped)
-├── PLANO-DE-TESTES.md     # planejamento completo da suíte
-└── requirements.txt
+|-- .github/workflows/
+|   `-- tests.yml             # pipeline de CI
+|-- helpers/
+|   |-- config.py             # URL base da API
+|   |-- auth.py               # login, token de admin e senha padrao
+|   |-- usuarios.py           # gerar_email(), criar_usuario()
+|   `-- produtos.py           # criar_produto(token)
+|-- tests/
+|   |-- test_usuarios.py      # CRUD de usuarios + cenarios negativos
+|   |-- test_login.py         # cenarios de autenticacao
+|   |-- test_produtos.py      # produtos com e sem token
+|   `-- test_carrinhos.py     # leitura de carrinhos
+|-- conftest.py               # fixture token_admin
+|-- pytest.ini                # coleta oficial apenas em tests/
+|-- PLANO-DE-TESTES.md        # planejamento da suite
+|-- test_desafio_api.py       # arquivo legado
+`-- requirements.txt
 ```
 
 ---
 
 ## Cobertura de testes
 
-### Método utilizado
+### Metodo utilizado
 
-A cobertura foi calculada com base no **método de cobertura por cenário de endpoint**, conforme descrito em [Como verificar a cobertura de testes da API REST](https://medium.com/revista-dtar/como-verificar-a-cobertura-de-testes-da-api-rest-9e2f745564b).
-
-O método consiste em:
-1. Mapear todos os endpoints disponíveis na API e suas operações (verbo + path)
-2. Para cada operação, listar os cenários possíveis (sucesso, erros de validação, não autorizado, não encontrado)
-3. Calcular o percentual de cenários cobertos por testes automatizados
+A cobertura foi calculada com base em cenarios por endpoint: para cada operacao da API, foram mapeados cenarios de sucesso, validacao, autorizacao e recurso inexistente.
 
 ### Mapeamento de cobertura
 
-| Endpoint | Operação | Cenários mapeados | Cenários cobertos | Cobertura |
-|---|---|---|---|---|
-| `POST /usuarios` | Criar usuário | 3 | 3 | 100% |
+| Endpoint | Operacao | Cenarios mapeados | Cenarios cobertos | Cobertura |
+|---|---|---:|---:|---:|
+| `POST /usuarios` | Criar usuario | 3 | 3 | 100% |
 | `GET /usuarios/{id}` | Buscar por ID | 2 | 2 | 100% |
-| `PUT /usuarios/{id}` | Atualizar usuário | 1 | 1 | 100% |
-| `DELETE /usuarios/{id}` | Excluir usuário | 1 | 1 | 100% |
-| `POST /login` | Autenticar | 4 | 4 | 100% |
+| `PUT /usuarios/{id}` | Atualizar usuario | 1 | 1 | 100% |
+| `DELETE /usuarios/{id}` | Excluir usuario | 1 | 1 | 100% |
+| `POST /login` | Autenticar | 6 | 6 | 100% |
 | `GET /produtos` | Listar produtos | 1 | 1 | 100% |
 | `GET /produtos/{id}` | Buscar por ID | 2 | 2 | 100% |
 | `POST /produtos` | Criar produto | 2 | 2 | 100% |
@@ -100,34 +102,36 @@ O método consiste em:
 | `DELETE /carrinhos/concluir-compra` | Concluir compra | 1 | 0 | 0% |
 | `DELETE /carrinhos/cancelar-compra` | Cancelar compra | 1 | 0 | 0% |
 
-**Total: 23 cenários cobertos de 24 mapeados**
+**Total: 22 cenarios cobertos de 26 mapeados**
 
-### Cobertura total: 88%
+### Cobertura total
 
-> 23 ÷ 26 cenários mapeados = **88%**
+> 22 / 26 cenarios mapeados = **85%**
 
-### O que ficou fora e por quê
+### O que ficou fora e por que
 
 | Endpoint | Motivo |
 |---|---|
-| `POST /carrinhos` | Exige composição de produto + usuário autenticado em um único payload. Setup complexo; priorizado para próxima iteração. |
-| `DELETE /carrinhos/concluir-compra` | Depende de um carrinho ativo criado previamente. Dependência em cadeia fora do escopo desta sprint. |
-| `DELETE /carrinhos/cancelar-compra` | Mesmo motivo acima. |
+| `POST /carrinhos` | Exige composicao de usuario autenticado, produto existente e payload encadeado. Priorizado para proxima iteracao. |
+| `DELETE /carrinhos/concluir-compra` | Depende de um carrinho ativo criado previamente. |
+| `DELETE /carrinhos/cancelar-compra` | Depende de um carrinho ativo criado previamente. |
 
 ---
 
-## Cenários testados
+## Cenarios testados
 
-### Usuários (7 testes)
+### Usuarios (7 testes)
+
 - Cadastro com sucesso
 - Busca por ID existente
-- Atualização de dados
-- Exclusão
+- Atualizacao de dados
+- Exclusao
 - Email duplicado (400)
 - Campo email ausente (400)
 - ID inexistente (400)
 
 ### Login (6 testes)
+
 - Credenciais corretas (200 + token)
 - Senha errada (401)
 - Email inexistente (401)
@@ -136,60 +140,59 @@ O método consiste em:
 - Campos vazios (400)
 
 ### Produtos (7 testes)
+
 - Listagem
 - Busca por ID
 - Cadastro com token de admin (201)
 - Cadastro sem token (401)
-- Atualização com token
-- Exclusão com token
+- Atualizacao com token
+- Exclusao com token
 - ID inexistente (400)
 
 ### Carrinhos (2 testes)
+
 - Listagem
 - Busca por ID
 
+### Contrato / JSON Schema (3 testes)
+
+- Estrutura da resposta de `POST /usuarios` — valida campos `message` e `_id` com tipos corretos
+- Estrutura da resposta de `POST /login` — valida campos `message` e `authorization`
+- Estrutura da resposta de `GET /produtos` — valida o array `produtos` e os campos de cada item
+
 ---
 
-## Bugs encontrados
+## Bugs observados na API
 
-Durante a execução da suíte foram identificados dois bugs reais na API, confirmados em múltiplas execuções consecutivas.
+Durante a analise da API, foram observados comportamentos que podem ser considerados inconsistentes em relacao a convencoes REST.
 
-### Bug 1 — PUT /usuarios/{id} cria novo usuário ao invés de atualizar
+### Bug 1 - PUT /usuarios/{id} cria usuario quando o ID nao existe
 
 **Endpoint:** `PUT /usuarios/000000000000000000000000`
 
-**Passos para reproduzir:**
-1. Enviar uma requisição PUT com um ID que não existe na base
-2. Incluir um body válido com nome, email, password e administrador
+**Resultado esperado:** `404 Not Found`, pois o recurso nao existe.
 
-**Resultado esperado:** `404 Not Found` — o recurso não existe
+**Resultado obtido:** `201 Created`, criando um novo usuario.
 
-**Resultado obtido:** `201 Created` — a API ignora o ID da URL e cria um novo usuário com um ID gerado automaticamente
+**Severidade:** Alta. Uma operacao de atualizacao passa a se comportar como criacao.
 
-**Severidade:** Alta — uma operação de atualização se comporta como criação silenciosa, podendo gerar registros duplicados sem que o cliente perceba
-
----
-
-### Bug 2 — DELETE /usuarios/{id} retorna 200 para ID inexistente
+### Bug 2 - DELETE /usuarios/{id} retorna 200 para ID inexistente
 
 **Endpoint:** `DELETE /usuarios/000000000000000000000000`
 
-**Passos para reproduzir:**
-1. Enviar uma requisição DELETE com um ID que não existe na base
+**Resultado esperado:** `404 Not Found`, pois o recurso nao existe.
 
-**Resultado esperado:** `404 Not Found` — o recurso não existe
+**Resultado obtido:** `200 OK` com a mensagem `"Nenhum registro excluido"`.
 
-**Resultado obtido:** `200 OK` com body `{ "message": "Nenhum registro excluído" }`
-
-**Severidade:** Média — não causa perda de dados, mas viola o padrão REST e induz falsa impressão de sucesso em quem consome a API
+**Severidade:** Media. Nao causa perda de dados, mas pode induzir falsa percepcao de sucesso.
 
 ---
 
 ## CI/CD
 
-A suíte é executada automaticamente via GitHub Actions a cada push no repositório.
+A suite e executada automaticamente via GitHub Actions a cada push ou pull request.
 
-Consulte `.github/workflows/tests.yml` para ver a configuração do pipeline.
+Consulte `.github/workflows/tests.yml` para ver a configuracao do pipeline.
 
 ---
 
